@@ -1,0 +1,10 @@
+The main process spawns a renderer process to do all the rendering.  The
+renderer renders a triangle to a VkImage like a regular Vulkan app, with two
+exceptions.
+
+The color of the triangle is supplied to Vulkan using a UBO, whose underlying
+memory is a memfd.  Then vkCopyImageToBuffer is used to copy the triangle from
+the VkImage to a VkBuffer, whose underlying memory is also a memfd.
+
+The main process updates the triangle color and reads the frame data through the
+memfd.
