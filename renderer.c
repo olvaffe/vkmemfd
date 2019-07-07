@@ -153,7 +153,7 @@ static void renderer_init_vk_instance(struct renderer *renderer)
 	uint32_t version;
 	vkEnumerateInstanceVersion(&version);
 	if (version < VK_MAKE_VERSION(1, 1, 0))
-		renderer_fatal("no Vulkan 1.1 support");
+		renderer_fatal("no Vulkan 1.1 instance support");
 
 	VkResult result = vkCreateInstance(
 			&(VkInstanceCreateInfo) {
@@ -173,6 +173,11 @@ static void renderer_init_vk_physical_device(struct renderer *renderer)
 			&count, &renderer->physical_dev);
 	if (result != VK_INCOMPLETE)
 		renderer_vk(result, "failed to enumerate physical devices");
+
+	VkPhysicalDeviceProperties props;
+	vkGetPhysicalDeviceProperties(renderer->physical_dev, &props);
+	if (props.apiVersion < VK_MAKE_VERSION(1, 1, 0))
+		renderer_fatal("no Vulkan 1.1 device support");
 
 	renderer->mem_props = (VkPhysicalDeviceMemoryProperties2) {
 		.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2
